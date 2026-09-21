@@ -1775,8 +1775,9 @@
         const departureTime = new Date('2026-09-22T15:55:00+08:00').getTime();
 
         function updateCountdown() {
-            const now = new Date().getTime();
-            const difference = departureTime - now;
+            const now = new Date();
+            const nowTime = now.getTime();
+            const difference = departureTime - nowTime;
 
             if (difference < 0) {
                 const widget = document.getElementById('top-countdown-widget');
@@ -1784,8 +1785,12 @@
                 return;
             }
 
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            document.getElementById('cd-days').textContent = days < 10 ? '0' + days : days;
+            // 以日曆天計算：9/21 顯示 01 天，9/22 出發當天上飛機前 (15:55 前) 顯示 00 天
+            const depDate = new Date('2026-09-22T00:00:00+08:00');
+            const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const diffDays = Math.max(0, Math.floor((depDate - nowDate) / (1000 * 60 * 60 * 24)));
+
+            document.getElementById('cd-days').textContent = diffDays < 10 ? '0' + diffDays : diffDays;
         }
 
         setInterval(updateCountdown, 1000);
